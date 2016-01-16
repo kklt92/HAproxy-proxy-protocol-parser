@@ -1,0 +1,41 @@
+No.     Time           Source                Destination           Protocol Length Info
+     12 0.001561000    192.168.44.135        192.168.44.1          TCP      193    48846 > irdmi [PSH, ACK] Seq=1 Ack=1 Win=29312 Len=127 TSval=3626567 TSecr=83245594
+
+Frame 12: 193 bytes on wire (1544 bits), 193 bytes captured (1544 bits) on interface 0
+Ethernet II, Src: Vmware_5b:10:18 (00:0c:29:5b:10:18), Dst: Vmware_c0:00:08 (00:50:56:c0:00:08)
+Internet Protocol Version 4, Src: 192.168.44.135 (192.168.44.135), Dst: 192.168.44.1 (192.168.44.1)
+Transmission Control Protocol, Src Port: 48846 (48846), Dst Port: irdmi (8000), Seq: 1, Ack: 1, Len: 127
+    Source port: 48846 (48846)
+    Destination port: irdmi (8000)
+    [Stream index: 1]
+    Sequence number: 1    (relative sequence number)
+    [Next sequence number: 128    (relative sequence number)]
+    Acknowledgment number: 1    (relative ack number)
+    Header length: 32 bytes
+    Flags: 0x018 (PSH, ACK)
+    Window size value: 229
+    [Calculated window size: 29312]
+    [Window size scaling factor: 128]
+    Checksum: 0xd078 [validation disabled]
+    Options: (12 bytes), No-Operation (NOP), No-Operation (NOP), Timestamps
+        No-Operation (NOP)
+        No-Operation (NOP)
+        Timestamps: TSval 3626567, TSecr 83245594
+            Kind: Timestamp (8)
+            Length: 10
+            Timestamp value: 3626567
+            Timestamp echo reply: 83245594
+    [SEQ/ACK analysis]
+Data (127 bytes)
+
+0000  50 52 4f 58 59 20 54 43 50 34 20 31 39 32 2e 31   PROXY TCP4 192.1
+0010  36 38 2e 34 34 2e 31 20 31 39 32 2e 31 36 38 2e   68.44.1 192.168.
+0020  34 34 2e 31 33 35 20 36 34 38 32 35 20 38 30 0d   44.135 64825 80.
+0030  0a 47 45 54 20 2f 20 48 54 54 50 2f 31 2e 31 0d   .GET / HTTP/1.1.
+0040  0a 48 6f 73 74 3a 20 31 39 32 2e 31 36 38 2e 34   .Host: 192.168.4
+0050  34 2e 31 33 35 0d 0a 55 73 65 72 2d 41 67 65 6e   4.135..User-Agen
+0060  74 3a 20 63 75 72 6c 2f 37 2e 34 33 2e 30 0d 0a   t: curl/7.43.0..
+0070  41 63 63 65 70 74 3a 20 2a 2f 2a 0d 0a 0d 0a      Accept: */*....
+    Data: 50524f58592054435034203139322e3136382e34342e3120...
+    Text: PROXY TCP4 192.168.44.1 192.168.44.135 64825 80\r\nGET / HTTP/1.1\r\nHost: 192.168.44.135\r\nUser-Agent: curl/7.43.0\r\nAccept: */*\r\n\r\n
+    [Length: 127]
