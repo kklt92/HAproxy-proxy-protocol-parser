@@ -23,14 +23,13 @@ type ConnInfo struct {
   DstIP   net.IP
   DstPort int
   Inet    string
-  Payload string
 }
 
 func (c ConnInfo) String() string {
   str := "Version: " + strconv.Itoa(c.Version) + "  Type: " + c.Inet + 
          "\nSource: " + c.SrcIP.String() + ":" + strconv.Itoa(c.SrcPort) +
-         "\nDestination: " + c.DstIP.String() + ":" + strconv.Itoa(c.DstPort) +
-         "\nPayload:\n" + c.Payload
+         "\nDestination: " + c.DstIP.String() + ":" + strconv.Itoa(c.DstPort) //+
+  //       "\nPayload:\n" + c.Payload
   
   return str
 }
@@ -49,13 +48,7 @@ func parseProxy(str string) (*ConnInfo) {
 }
 
 func parseProxyV1(str string, connInfo *ConnInfo) {
-  firstLineIndex := strings.Index(str, "\r\n")
-  proxyStr := str[:firstLineIndex]
-  if (firstLineIndex + 2 >= len(str)) {
-    log.Fatal("Error: packet not valid length")
-    return
-  }
-  connInfo.Payload= str[firstLineIndex + 2:]
+  proxyStr := str[:len(str)-2]
   proxyTokens := strings.Split(proxyStr, " ")
   if (len(proxyTokens) <= 1 || len(proxyTokens) > 6) {
     log.Fatal("Error: packet length not valid: " + strconv.Itoa(len(proxyTokens)))
@@ -101,41 +94,43 @@ func parseProxyV2(str string, connInfo *ConnInfo) {
   // TODO 
 }
 
+func handleDefault(w http.ResponseWriter, r *http.Request) {
+  w.Write([]byte("<h1>Your IP address:</h1>\r\n" + r.Header.Get("SrcIP") +":" + r.Header.Get("SrcPort") + "\r\n"))
+}
+
 func main() {
   l, err := net.Listen("tcp", ":8000")
   if err != nil {
     log.Fatal(err)
   }
   defer l.Close()
+  http.HandleFunc("/", handleDefault)
+  go http.ListenAndServe("127.0.0.1:8081", nil)
   for {
     conn, err := l.Accept()
     if err != nil {
       log.Fatal(err)
     }
     go func(c net.Conn) {
-      tmp := make([]byte, 1024)
-      length, err := c.Read(tmp)
+      defer c.Close()
+      b:= bufio.NewReader(c)
+      fmt.Println("Received packet")
+      proxyStr, err := b.ReadString('\n')
+      connInfo := parseProxy(proxyStr)
+      fmt.Println(connInfo)
+      req , err := http.ReadRequest(b)
+      req.Header.Add("SrcIP", connInfo.SrcIP.String())
+      req.Header.Add("SrcPort", strconv.Itoa(connInfo.SrcPort))
       if err != nil {
         log.Fatal(err)
       }
-      fmt.Println("Received packet")
-      if length >= ProxyMinLen {
-        connInfo := parseProxy(string(tmp[:length]))
-        fmt.Println(connInfo)
-        req , err := http.ReadRequest(bufio.NewReader(strings.NewReader(connInfo.Payload)))
-        if err != nil {
-          log.Fatal(err)
-        }
-        fmt.Println(req)
-        resp, _:= http.Get("http://www.google.com")
+      fmt.Println(req)
 
-        fmt.Println(resp)
-        resp.Write(c)
-      } else {
-        
-      }
-      
-      c.Close()
+      be, err := net.Dial("tcp", "127.0.0.1:8081") 
+      beReader := bufio.NewReader(be)
+      req.Write(be)
+      resp, err := http.ReadResponse(beReader, req)
+      resp.Write(c)
     }(conn)
   }
 }
